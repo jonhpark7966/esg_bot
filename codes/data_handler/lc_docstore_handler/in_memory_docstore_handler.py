@@ -1,4 +1,4 @@
-from codes.data_handler.lc_docstore_handler.docstore_handler import DocstoreHandler
+from .docstore_handler import DocstoreHandler
 from langchain.storage import InMemoryStore
 
 import json

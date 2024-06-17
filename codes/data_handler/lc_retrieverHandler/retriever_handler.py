@@ -25,10 +25,10 @@ class RetrieverHandler():
         """
 
         self.add_documents(
-            components["page_images_summaries"], components["page_images_b64"], components['source']
+            components["page_images_summaries"], components["page_images_b64"], components['source_url']
             )
         self.add_documents(
-            components["tables_summaries"], components["tables"], components['source']
+            components["tables_summaries"], components["tables"], components['source_url']
             )
 
         return True
@@ -39,7 +39,7 @@ class RetrieverHandler():
             str(uuid.uuid4()) for _ in doc_contents
         ]  # 문서 내용마다 고유 ID 생성
         summary_docs = [
-            Document(page_content=s, metadata={self.id_key: doc_ids[i], "source": source})
+            Document(page_content=s, metadata={self.id_key: doc_ids[i], "source_url": source})
             for i, s in enumerate(doc_summaries)
         ]
         self.retriever.vectorstore.add_documents(

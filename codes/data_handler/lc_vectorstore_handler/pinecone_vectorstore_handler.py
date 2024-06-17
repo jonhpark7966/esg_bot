@@ -1,4 +1,5 @@
-from codes.data_handler.lc_vectorstore_handler.vectorstore_handler import VectorstoreHandler
+from ..utils.krx_codes import KrxCodes
+from .vectorstore_handler import VectorstoreHandler
 
 from pinecone.grpc import PineconeGRPC as Pinecone
 from pinecone import ServerlessSpec
@@ -40,10 +41,11 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
         Returns:
         vectorstore instance for langchain
         """
-        api_key = os.envrion['PINECONE_API_KEY']  
+        api_key = os.getenv('PINECONE_API_KEY')
         pc = Pinecone(api_key=api_key)
+        code = KrxCodes().convert_to_code(self.company_name)
 
-        index_name = self.compnay_name + "-" + self.year
+        index_name = "krx"+code + "-" + str(self.year)
 
         if index_name not in pc.list_indexes().names():
             pc.create_index(

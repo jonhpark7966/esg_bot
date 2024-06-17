@@ -4,7 +4,7 @@ from langchain_openai import OpenAIEmbeddings
 
 class VectorstoreHandler(ABC):
     def getStore(self):
-        return self.vectorestore
+        return self.vectorstore
 
     def __init__(self, company_name, year, embeddingModel='text-embedding-3-large'):
         """
@@ -15,7 +15,7 @@ class VectorstoreHandler(ABC):
         year (int): year of report
         embeddingModel (str): default is openai's model
         """
-        self.compnay_name = company_name
+        self.company_name = company_name
         self.year = year
 
         self.dimension = 1
@@ -41,8 +41,8 @@ class VectorstoreHandler(ABC):
 
         try:
             self.vectorstore = self.create()
-        except:
-            print("Vector Store Creation Failed!")
+        except Exception as e:
+            print("Vector Store Creation Failed! ", e)
 
     @abstractmethod
     def connect(self):

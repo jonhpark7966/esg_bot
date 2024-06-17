@@ -5,13 +5,10 @@ from langchain_openai import ChatOpenAI
 import base64
 
 from langchain_core.messages import HumanMessage
-
-
-
-from codes.data_handler.summary_handler.summary_handler import SummaryHandler
+from .summary_handler import SummaryHandler
 
 class GPTSummaryHandler(SummaryHandler):
-    def summary(self, components, model="GPT-4o"):
+    def summary(self, components, model="gpt-4o"):
         """
         Generate Summary of components of report.
           - Try to handler all of the components
@@ -24,13 +21,14 @@ class GPTSummaryHandler(SummaryHandler):
         """
 
         try:
-            for key, value in components:
+            for key in list(components.keys()):
+                value = components[key]
                 # value might be a list.
-                if key is "texts" or key is "tables":
+                if key == "texts" or key == "tables":
                     # 텍스트, 테이블 요약 가져오기
                     summaries = self.generate_text_summaries(value, model)
                     components[key+"_summaries"] = summaries
-                elif key is "page_images_path":
+                elif key == "page_images_path":
                     # 이미지 요약 실행
                     img_base64_list, image_summaries = self.generate_img_summaries(value, model)
                     components["page_images_b64"] = img_base64_list
@@ -38,12 +36,12 @@ class GPTSummaryHandler(SummaryHandler):
                     # remove paths.
                     del components["page_images_path"]
                 
-                print("{key} summary generated")
+                print(f"{key} summary generated")
 
             return components
 
         except Exception as e:
-            print("Error on summary generation: {e}")
+            print(f"Error on summary generation: {e}")
 
         return {}
     

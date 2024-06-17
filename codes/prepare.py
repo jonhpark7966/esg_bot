@@ -1,29 +1,49 @@
 # Configuring
-from codes.data_handler.lc_docstore_handler.in_memory_docstore_handler import InMemoryDocstoreHandler
-from codes.data_handler.lc_retrieverHandler.retriever_handler import RetrieverHandler
-from codes.data_handler.report_handler.pdf_image_report_handler import PdfImageReportHandler
-from codes.data_handler.summary_handler.gpt_summary_handler import GPTSummaryHandler
-from codes.data_handler.lc_vectorstore_handler.pinecone_vectorstore_handler import PineconeVectorstoreHandler
+from data_handler.lc_docstore_handler.in_memory_docstore_handler import InMemoryDocstoreHandler
+from data_handler.lc_retrieverHandler.retriever_handler import RetrieverHandler
+from data_handler.report_handler.pdf_image_report_handler import PdfImageReportHandler
+from data_handler.summary_handler.gpt_summary_handler import GPTSummaryHandler
+from data_handler.lc_vectorstore_handler.pinecone_vectorstore_handler import PineconeVectorstoreHandler
 
-company = "SKT"
-year = 2023
-report_url = "...."
+from dotenv import load_dotenv
+import pandas as pd
+import os
 
-report_data_dir = "../data/reports/"
+# Load the .env file
+load_dotenv()
+
+report_data_dir = "./data/reports/"
 report_name = "report.pdf"
+file_list_df = pd.read_csv("./data/reports.csv")
 
-components = PdfImageReportHandler(
-    company_name=company, year=year, report_url=report_url
-    ).splitFile(report_data_dir, report_name)
-summarized_components = GPTSummaryHandler().summary(components)
+target = "LG에너지솔루션"#SK텔레콤"
+row = file_list_df[file_list_df.company_name == target].iloc[0]
+
+company_name = row["company_name"]
+year = row["year"]
+url = f"{os.getenv('logblack_url')}{company_name}_{year}.pdf"
+
+# FIXME: TESTING.
+#url = "https://www.clickdimensions.com/links/TestPDFfile.pdf"
 
 
-# USE LangChain from here.
-vectorstore_handler = PineconeVectorstoreHandler(
-    company_name=company, year=year, embeddingModel='text-embedding-3-large'
-    ).getStore()
-docstore_handler = InMemoryDocstoreHandler().getStore()
+def report_prepare(company, year, report_url, report_data_dir, report_name):
+    # pdf to components.
+    components = PdfImageReportHandler(
+        company_name=company, year=year, report_url=report_url
+        ).splitReport(report_data_dir, report_name)
+    summarized_components = GPTSummaryHandler().summary(components)
 
-lc_retriever = RetrieverHandler(vectorstore_handler, docstore_handler)
-lc_retriever.add(summarized_components)
-docstore_handler.export()
+    # USE LangChain from here.
+    vectorstore_handler = PineconeVectorstoreHandler(
+        company_name=company, year=year, embeddingModel='text-embedding-3-large'
+        ).getStore()
+    docstore_handler = InMemoryDocstoreHandler()
+    lc_docstore = docstore_handler.getStore()
+
+    lc_retriever = RetrieverHandler(vectorstore_handler, lc_docstore)
+    lc_retriever.add(summarized_components)
+    docstore_handler.export_to_file(report_data_dir+"store_data.json")
+
+report_prepare(company_name, year, url, report_data_dir, report_name)
+print("SUCCESS!")

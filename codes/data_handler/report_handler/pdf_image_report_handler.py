@@ -4,7 +4,7 @@ import os
 from pdf2image import convert_from_path
 from PIL import Image
 
-from report_handler import ReportHandler
+from .report_handler import ReportHandler
 
 class PdfImageReportHandler(ReportHandler):
     def splitReport(self, save_dir, report_name):
@@ -24,15 +24,17 @@ class PdfImageReportHandler(ReportHandler):
             components["source_url"] = self.report_url
 
             # get report file from url.
-            save_path = save_dir + self.compnay_name + str(self.year) + "./" + report_name 
+            save_path = save_dir + self.compnay_name + str(self.year) + "/" + report_name 
             self.download_file(self.report_url, save_path)
 
             # extract components from pdf.
-            raw_pdf_elements = self.extract_pdf_elements(save_path)
+            # TODO, table skipped
+            #raw_pdf_elements = self.extract_pdf_elements(save_path)
 
             # 텍스트, 테이블, 이미지, 기타 정보 추출
-            texts, tables, images, others = self.categorize_elements(raw_pdf_elements)
-            components["tables"] = tables
+            # texts, tables, images, others = self.categorize_elements(raw_pdf_elements)
+            #components["tables"] = tables
+            components["tables"] = []
 
             # Text 는 버리자. 보고서에서 무쓸모임.
             # text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
@@ -41,19 +43,19 @@ class PdfImageReportHandler(ReportHandler):
             # joined_texts = " ".join(texts)  # 텍스트 결합
             # texts_4k_token = text_splitter.split_text(joined_texts)  # 분할 실행
 
-            page_image_dir = os.path.dirname(save_path)+"./page_images"
+            page_image_dir = os.path.dirname(save_path)+"/page_images"
             image_paths = self.extract_images_from_pdf(save_path, page_image_dir)
 
             components["page_images_path"] = image_paths
             return components
 
         except Exception as e:
-            print("Error on split reports: {e}")
+            print(f"Error on split reports: {e}")
 
         return {}
     
 
-    def download_file(url, save_path):
+    def download_file(self, url, save_path):
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
         response = requests.get(url)
@@ -66,7 +68,7 @@ class PdfImageReportHandler(ReportHandler):
 
 
     # PDF에서 요소 추출
-    def extract_pdf_elements(filename):
+    def extract_pdf_elements(self, filename):
         """
         PDF 파일에서 이미지, 테이블, 텍스트, 기타 정보를 추출합니다.
         path: 이미지(.jpg)를 저장할 파일 경로
@@ -85,7 +87,7 @@ class PdfImageReportHandler(ReportHandler):
         )
 
     # 요소를 유형별로 분류
-    def categorize_elements(raw_pdf_elements):
+    def categorize_elements(self, raw_pdf_elements):
         """
         PDF에서 추출된 요소를 테이블, 텍스트, 이미지, 기타 정보로 분류합니다.
         raw_pdf_elements: unstructured.documents.elements의 리스트
@@ -109,9 +111,9 @@ class PdfImageReportHandler(ReportHandler):
         return texts, tables, images, others
 
     # Function to extract images from a PDF and save them as JPG
-    def extract_images_from_pdf(pdf_path, output_folder):
+    def extract_images_from_pdf(self, pdf_path, output_folder):
         # Convert PDF to a list of images
-        images = convert_from_path(pdf_path)
+        images = convert_from_path(pdf_path, fmt='jpeg')
 
         # Ensure output folder exists
         if not os.path.exists(output_folder):
@@ -127,5 +129,3 @@ class PdfImageReportHandler(ReportHandler):
         print(f"Saved image to {output_folder}, {len(images)} files")
 
         return paths 
-
-
