@@ -11,7 +11,12 @@ import os
 
 
 class PineconeVectorstoreHandler(VectorstoreHandler):
-    # CHECK: os.envrion['PINECONE_API_KEY'] = "API_KEY"
+
+    def preinit(self):
+        self.api_key = os.getenv('PINECONE_API_KEY')
+        self.pc = Pinecone(api_key=self.api_key)
+        self.code = KrxCodes().convert_to_code(self.company_name)
+        self.index_name = "krx"+self.code + "-" + str(self.year)
 
     def connect(self):
         """
@@ -20,7 +25,14 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
         Returns:
         vectorstore instance for langchain
         """
-        raise NotImplementedError("TODO") 
+
+        if self.index_name not in self.pc.list_indexes().names():
+            raise ValueError("Index does not exist in the Pinecone Project")
+            
+        return PineconeVectorStore(
+            index_name=self.index_name,
+            embedding=self.lc_embeddingModel
+        )
 
     def load(self):
         """
@@ -41,15 +53,10 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
         Returns:
         vectorstore instance for langchain
         """
-        api_key = os.getenv('PINECONE_API_KEY')
-        pc = Pinecone(api_key=api_key)
-        code = KrxCodes().convert_to_code(self.company_name)
 
-        index_name = "krx"+code + "-" + str(self.year)
-
-        if index_name not in pc.list_indexes().names():
-            pc.create_index(
-                name=index_name,
+        if self.index_name not in self.pc.list_indexes().names():
+            self.pc.create_index(
+                name=self.index_name,
                 dimension=self.dimension,
                 metric=self.metric,
                 spec=ServerlessSpec(
@@ -59,6 +66,6 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
           )
             
         return PineconeVectorStore(
-            index_name=index_name,
+            index_name=self.index_name,
             embedding=self.lc_embeddingModel
         )

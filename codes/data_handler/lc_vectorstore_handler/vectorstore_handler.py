@@ -29,20 +29,28 @@ class VectorstoreHandler(ABC):
 
         self.vectorstore = None
 
+        self.preinit()
+
         try:
             self.vectorstore = self.connect()
+            return
         except:
             print("Vector Store Connection Failed, fallback to load.")
 
         try:
             self.vectorstore = self.load()
+            return
         except:
             print("Vector Store Load Failed, fallback to create")
 
         try:
             self.vectorstore = self.create()
+            return
         except Exception as e:
             print("Vector Store Creation Failed! ", e)
+
+    def preinit(self):
+        pass
 
     @abstractmethod
     def connect(self):

@@ -7,7 +7,7 @@ class InMemoryDocstoreHandler(DocstoreHandler):
     def __init__(self):
         self.docstore = InMemoryStore() 
 
-    def load_from_file(self, path):
+    def load_from_file(self, path="store_data.json"):
         """
         Abstract function
         tries to load DocStore
@@ -15,7 +15,10 @@ class InMemoryDocstoreHandler(DocstoreHandler):
         Returns:
         docstore instance for langchain
         """
-        raise NotImplementedError() 
+        # JSON 파일에서 데이터 읽기
+        with open(path, "r") as json_file:
+            loaded_data = json.load(json_file)
+            self.docstore.mset(list(zip(loaded_data.keys(), loaded_data.values())))
 
     def export_to_file(self, path="store_data.json"):
         """

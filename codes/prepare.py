@@ -16,7 +16,7 @@ report_data_dir = "./data/reports/"
 report_name = "report.pdf"
 file_list_df = pd.read_csv("./data/reports.csv")
 
-target = "LG에너지솔루션"#SK텔레콤"
+target = "SK텔레콤"#"LG에너지솔루션"#
 row = file_list_df[file_list_df.company_name == target].iloc[0]
 
 company_name = row["company_name"]
@@ -43,7 +43,7 @@ def report_prepare(company, year, report_url, report_data_dir, report_name):
 
     lc_retriever = RetrieverHandler(vectorstore_handler, lc_docstore)
     lc_retriever.add(summarized_components)
-    docstore_handler.export_to_file(report_data_dir+"store_data.json")
+    docstore_handler.export_to_file(report_data_dir+company_name+str(year)+"/store_data.json")
 
 report_prepare(company_name, year, url, report_data_dir, report_name)
 print("SUCCESS!")
