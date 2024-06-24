@@ -117,9 +117,13 @@ class GPTSummaryHandler(SummaryHandler):
 
         # 이미지에 적용
         for img_path in paths:
-                base64_image = self.encode_image(img_path)
-                img_base64_list.append(base64_image)
-                image_summaries.append(self.image_summarize(base64_image, prompt, model))
+                try:
+                    base64_image = self.encode_image(img_path)
+                    summary = self.image_summarize(base64_image, prompt, model)
+                    img_base64_list.append(base64_image)
+                    image_summaries.append(summary)
+                except:
+                    print(f"FAIL! {img_path}")
 
         return img_base64_list, image_summaries
 
