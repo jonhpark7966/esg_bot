@@ -25,7 +25,7 @@ def get_answer(x):
     return answer
 
 # Apply the function to the '평가항목' column and create a new column 'Answer'
-evaluate_sample_df['SKT RAG Answer'] = evaluate_sample_df['평가항목'].apply(get_answer)
+evaluate_sample_df['SKT RAG Answer - 2'] = evaluate_sample_df['평가항목'].apply(get_answer)
 
 # Save the updated DataFrame to a new CSV file
 evaluate_sample_df.to_csv("./data/evaluate/evaluate_sample_with_answers.csv", index=False)

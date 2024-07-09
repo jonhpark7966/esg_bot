@@ -115,6 +115,30 @@ class GPTSummaryHandler(SummaryHandler):
         These summaries will be embedded and used to retrieve the raw image. \
         Give a concise summary of the image that is well optimized for retrieval."""
 
+        # 이미지 요약 프롬프트 추가
+        prompt = prompt + """
+        Summary should be in Korean.
+        Output format is like this.
+
+        예시:
+
+        페이지 제목: 준법 경영 및 주요 추진 성과
+        키워드: 환경 경영, 중장기 목표, 인권
+        패이지 번호 : 42
+        핵심 내용:
+	    - 주요 내용
+          - 컴플라이언스: 시장과 사회로 부터 요구되는 법적 규제 및 윤리적 기준을 준수
+          - 컴플라이언스 체계 가이드라인을 바탕으로 공정 거래 채계를 구축
+          - 추진 과제: 준법 경영 문화 확산, 대외 신뢰도 제고
+	    - 주요 데이터/통계:
+	      - 정책관련 지출 현황
+	      -	유관 기관 협회 협회비 총액 609백만원
+          - 상위 5개 지출 협회명: A협회, B협회, C협회, D협회, E협회
+        - 주요 이미지 설명
+            - 중장기 추진 목표의 달성을 위한 도식
+            - 환경 경영 성과에 대한 그래프
+        """
+
         # 이미지에 적용
         for img_path in paths:
                 try:

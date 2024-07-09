@@ -36,7 +36,7 @@ def report_prepare(company, year, report_url, report_data_dir, report_name):
 
     # USE LangChain from here.
     vectorstore_handler = PineconeVectorstoreHandler(
-        company_name=company, year=year, embeddingModel='text-embedding-3-large'
+        company_name=company, year=year, embeddingModel='text-embedding-3-large', postfix="kr"
         ).getStore()
     docstore_handler = InMemoryDocstoreHandler()
     lc_docstore = docstore_handler.getStore()

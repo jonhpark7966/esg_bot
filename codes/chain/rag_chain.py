@@ -37,7 +37,7 @@ class RAGChain():
 class ESGReportRAGChain(RAGChain):
     def __init__(self, company_name, year):
         self.vectorstore_handler = PineconeVectorstoreHandler(
-            company_name=company_name, year=year, embeddingModel='text-embedding-3-large'
+            company_name=company_name, year=year, embeddingModel='text-embedding-3-large', postfix='kr'
             ).getStore()
         self.docstore_handler = InMemoryDocstoreHandler()
         self.docstore_handler.load_from_file(build_store_path(company_name,year))

@@ -1,4 +1,4 @@
-from unstructured.partition.pdf import partition_pdf
+#from unstructured.partition.pdf import partition_pdf
 import requests
 import os
 from pdf2image import convert_from_path

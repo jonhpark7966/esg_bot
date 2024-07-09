@@ -6,7 +6,7 @@ class VectorstoreHandler(ABC):
     def getStore(self):
         return self.vectorstore
 
-    def __init__(self, company_name, year, embeddingModel='text-embedding-3-large'):
+    def __init__(self, company_name, year, embeddingModel='text-embedding-3-large', postfix=""):
         """
         Initialize the class with attributes.
 
@@ -17,6 +17,7 @@ class VectorstoreHandler(ABC):
         """
         self.company_name = company_name
         self.year = year
+        self.postfix = postfix
 
         self.dimension = 1
         self.metric="cosine"

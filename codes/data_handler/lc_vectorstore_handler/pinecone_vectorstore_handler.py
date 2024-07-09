@@ -1,7 +1,7 @@
 from ..utils.krx_codes import KrxCodes
 from .vectorstore_handler import VectorstoreHandler
 
-from pinecone.grpc import PineconeGRPC as Pinecone
+from pinecone import Pinecone
 from pinecone import ServerlessSpec
 
 from langchain_pinecone import PineconeVectorStore
@@ -16,7 +16,8 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
         self.api_key = os.getenv('PINECONE_API_KEY')
         self.pc = Pinecone(api_key=self.api_key)
         self.code = KrxCodes().convert_to_code(self.company_name)
-        self.index_name = "krx"+self.code + "-" + str(self.year)
+        self.index_name = "logblack-esg-bot"
+        self.namespace = "krx"+self.code + "-" + str(self.year)+"-"+self.postfix
 
     def connect(self):
         """
@@ -31,7 +32,8 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
             
         return PineconeVectorStore(
             index_name=self.index_name,
-            embedding=self.lc_embeddingModel
+            embedding=self.lc_embeddingModel,
+            namespace=self.namespace
         )
 
     def load(self):
@@ -67,5 +69,6 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
             
         return PineconeVectorStore(
             index_name=self.index_name,
-            embedding=self.lc_embeddingModel
+            embedding=self.lc_embeddingModel,
+            namespace=self.namespace
         )
