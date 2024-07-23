@@ -42,8 +42,9 @@ def report_prepare(company, year, report_url, report_data_dir, report_name):
     lc_docstore = docstore_handler.getStore()
 
     lc_retriever = RetrieverHandler(vectorstore_handler, lc_docstore)
-    lc_retriever.add(summarized_components)
+    lc_retriever.add(summarized_components, company_name = company, year = year)
     docstore_handler.export_to_file(report_data_dir+company_name+str(year)+"/store_data.json")
 
 report_prepare(company_name, year, url, report_data_dir, report_name)
 print("SUCCESS!")
+

@@ -33,6 +33,13 @@
      - 다양한 보고서와 다양한 질문에 대해 전문가의 평가가 필요함.
   
 - User feedback 수집 창구
+  - 2024.07.09
   - Streamlit 으로 UI 구성.
   - Langsmith Feedback 연결.
   - 사용자가 챗봇을 통해 질문지를 수정하거나, 결과를 관찰하며 피드백을 남겨 기록하고 나중에 추적해서 개선하도록 함.
+  
+- Dataset & Evaluation
+  - prompt 를 바꾸거나, LLM을 바꾸거나, 여러가지 요소들에 의해서 차이가 발생할 수 있는데, 자동 evaluation 도구가 필요함
+  - Retreival 이 잘 된건지. 혹은 대답이 잘못되었는지 등 여러가지 시도와 정량적인 평가를 위한 파이프라인을 만들자.
+
+- Pinecone Vector Database metadata추가, namespace 는 바꾸지는 않음
