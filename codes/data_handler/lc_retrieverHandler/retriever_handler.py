@@ -41,7 +41,7 @@ class RetrieverHandler():
                  self.id_key: doc_ids[i],
                   "source_url": source,
                   "company_name": company_name,
-                  "year": year
+                  "year": str(year) # to string
                   })
             for i, s in enumerate(doc_summaries)
         ]
