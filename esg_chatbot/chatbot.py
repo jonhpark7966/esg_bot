@@ -1,30 +1,26 @@
-from chain.rag_chain import ESGReportRAGChain
-from data_handler.utils.lc_callback_handler import RetrieveCallbackHandler
-
-from dotenv import load_dotenv
-import pandas as pd
 import os
+
+import pandas as pd
+import streamlit as st
+from dotenv import load_dotenv
+from langchain_core.tracers.context import collect_runs
+from langsmith import Client
+from streamlit_feedback import streamlit_feedback
+
+from esg_bot.chain.rag_chain import ESGReportRAGChain
+from esg_bot.data_handler.utils.lc_callback_handler import RetrieveCallbackHandler
 
 # Load the .env file
 load_dotenv()
 
 file_list_df = pd.read_csv("./data/reports.csv")
-target = "SK텔레콤"##"LG에너지솔루션"
+target = "SK텔레콤"  ##"LG에너지솔루션"
 row = file_list_df[file_list_df.company_name == target].iloc[0]
 company_name = row["company_name"]
 year = row["year"]
-url = f"{os.getenv('logblack_url')}{company_name}_{year}.pdf"
-
 
 
 chain = ESGReportRAGChain(company_name=company_name, year=year)
-
-
-import streamlit as st
-from langchain import memory as lc_memory
-from langsmith import Client
-from streamlit_feedback import streamlit_feedback
-from langchain_core.tracers.context import collect_runs
 
 # Langsmith project change
 os.environ["LANGCHAIN_PROJECT"] = "LogBlack Chatbot Tracing & Feedback"
@@ -40,21 +36,16 @@ st.subheader("🦜🛠️ Chatbot with Feedback in LangSmith")
 
 st.sidebar.info(
     """
-         
 An example of a Streamlit Chat UI capturing user feedback.
 
 - [LangSmith Documentation](https://docs.smith.langchain.com/)
 - Streamlit's [chat elements Documentation](https://docs.streamlit.io/library/api-reference/chat)
 - Trubrics' [Streamlit-Feedback](https://github.com/trubrics/streamlit-feedback) component
-         
 """
 )
 
 st.sidebar.markdown("## Feedback Scale")
-feedback_option = (
-    "thumbs" if st.sidebar.toggle(label="`Faces` ⇄ `Thumbs`", value=False) else "faces"
-)
-
+feedback_option = "thumbs" if st.sidebar.toggle(label="`Faces` ⇄ `Thumbs`", value=False) else "faces"
 
 rcb = RetrieveCallbackHandler()
 
@@ -62,7 +53,7 @@ with st.form("form"):
     text = st.text_area("Enter text:", "Ask me a question!")
     submitted = st.form_submit_button("Submit")
     if submitted:
-        # get run_id from chain or lanchain run 
+        # get run_id from chain or lanchain run
         with collect_runs() as cb:
             st.info(chain.invoke(text, callbacks=[rcb]))
             st.session_state.run_id = cb.traced_runs[0].id
@@ -107,4 +98,3 @@ if st.session_state.get("run_id"):
             }
         else:
             st.warning("Invalid feedback score.")
-

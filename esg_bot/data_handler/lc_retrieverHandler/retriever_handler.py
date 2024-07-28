@@ -1,10 +1,10 @@
+import uuid
+
 from langchain.retrievers.multi_vector import MultiVectorRetriever
 from langchain_core.documents import Document
 
-import uuid
 
-class RetrieverHandler():
-
+class RetrieverHandler:
     def __init__(self, vectorstore, docstore):
         self.id_key = "doc_id"
 
@@ -14,23 +14,19 @@ class RetrieverHandler():
             id_key=self.id_key,
         )
 
-
     def add(self, components, company_name, year):
         """
         add components to retreiver
         also, automatically addeding them to vectorstore, docsotre
 
         Returns:
-        True on Success 
+        True on Success
         """
 
-        self.add_documents(
-            components["page_images_summaries"], components["page_images_b64"], components['source_url'], components['page_num'],
-            company_name, year
-            )
+        self.add_documents(components["page_images_summaries"], components["page_images_b64"], components["source_url"], company_name, year)
 
         return True
-    
+
     # 문서를 벡터 저장소와 문서 저장소에 추가하는 헬퍼 함수
     def add_documents(self, doc_summaries, doc_contents, source, page_nums, company_name, year):
         doc_ids = [

@@ -1,5 +1,9 @@
-from .docstore_handler import DocstoreHandler
+import json
+
 from langchain.storage import InMemoryStore
+
+from .docstore_handler import DocstoreHandler
+
 from langchain.schema import Document
 import json
 
