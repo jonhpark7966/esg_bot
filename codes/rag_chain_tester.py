@@ -1,5 +1,7 @@
 from chain.rag_chain import ESGReportRAGChain
 
+from data_handler.utils.lc_callback_handler import RetrieveCallbackHandler
+
 from dotenv import load_dotenv
 import pandas as pd
 import os
@@ -14,14 +16,14 @@ company_name = row["company_name"]
 year = row["year"]
 url = f"{os.getenv('logblack_url')}{company_name}_{year}.pdf"
 
-
+cb = RetrieveCallbackHandler()
 chain = ESGReportRAGChain(company_name=company_name, year=year)
 
 evaluate_sample_df = pd.read_csv("./data/evaluate/evaluate_sample.csv")
 
 # Define a function to apply
 def get_answer(x):
-    answer = chain.invoke(x)
+    answer = chain.invoke(x, callbacks=[cb])
     return answer
 
 # Apply the function to the '평가항목' column and create a new column 'Answer'

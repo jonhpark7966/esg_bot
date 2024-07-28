@@ -24,7 +24,7 @@ year = row["year"]
 url = f"{os.getenv('logblack_url')}{company_name}_{year}.pdf"
 
 # FIXME: TESTING.
-#url = "https://www.clickdimensions.com/links/TestPDFfile.pdf"
+#url = "https://pdfobject.com/pdf/sample.pdf"
 
 
 def report_prepare(company, year, report_url, report_data_dir, report_name):

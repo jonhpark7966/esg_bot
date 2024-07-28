@@ -1,4 +1,5 @@
 from chain.rag_chain import ESGReportRAGChain
+from data_handler.utils.lc_callback_handler import RetrieveCallbackHandler
 
 from dotenv import load_dotenv
 import pandas as pd
@@ -13,6 +14,7 @@ row = file_list_df[file_list_df.company_name == target].iloc[0]
 company_name = row["company_name"]
 year = row["year"]
 url = f"{os.getenv('logblack_url')}{company_name}_{year}.pdf"
+
 
 
 chain = ESGReportRAGChain(company_name=company_name, year=year)
@@ -54,13 +56,15 @@ feedback_option = (
 )
 
 
+rcb = RetrieveCallbackHandler()
+
 with st.form("form"):
     text = st.text_area("Enter text:", "Ask me a question!")
     submitted = st.form_submit_button("Submit")
     if submitted:
         # get run_id from chain or lanchain run 
         with collect_runs() as cb:
-            st.info(chain.invoke(text))
+            st.info(chain.invoke(text, callbacks=[rcb]))
             st.session_state.run_id = cb.traced_runs[0].id
 
 if st.session_state.get("run_id"):

@@ -43,3 +43,18 @@
   - Retreival 이 잘 된건지. 혹은 대답이 잘못되었는지 등 여러가지 시도와 정량적인 평가를 위한 파이프라인을 만들자.
 
 - Pinecone Vector Database metadata추가, namespace 는 바꾸지는 않음
+
+
+- Chain callback to get Retrived Images
+  - 근거 이미지를 streamlit chatbot에 추가함.
+  - Evalution 로직으로 들어감.
+
+- Evaluation
+  - 온라인
+    - 쓸데 없는 것을 들고 왔나.
+    - 답변 퀄리티를 정의해야 함... 이건 못해. 이건 유저 피드백으로 받아야 함.
+  - 평가 항목을 구성한다. --> 손으로 누가 잡아줘야 함. 
+  - 데이터셋을 만들어야 하고
+  - 사람이 잡아준 정답 output 이랑 비교를 하는 평가를 만들어야함.
+  - 리트라이브가 잘 되었는지 봐야한다. 
+  - 데이터셋을 구성한 후 모델을 바꿔가며 a/b 테스트를 한다. 

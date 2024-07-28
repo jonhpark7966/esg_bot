@@ -30,8 +30,8 @@ class RAGChain():
         if False: #TODO, config LangSmith
             os.environ["LANGCHAIN_PROJECT"] = "LangSmithTracing"
 
-    def invoke(self, query):
-        return self.chain.invoke(query)
+    def invoke(self, query, callbacks= []):
+        return self.chain.invoke(query, config={"callbacks": callbacks})
 
 
 class ESGReportRAGChain(RAGChain):
