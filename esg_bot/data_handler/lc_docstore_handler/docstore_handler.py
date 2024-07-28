@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class DocstoreHandler(ABC):
     def getStore(self):
         return self.docstore

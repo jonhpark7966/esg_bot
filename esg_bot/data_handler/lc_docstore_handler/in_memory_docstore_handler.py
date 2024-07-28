@@ -1,11 +1,13 @@
-from .docstore_handler import DocstoreHandler
+import json
+
 from langchain.storage import InMemoryStore
 
-import json
+from .docstore_handler import DocstoreHandler
+
 
 class InMemoryDocstoreHandler(DocstoreHandler):
     def __init__(self):
-        self.docstore = InMemoryStore() 
+        self.docstore = InMemoryStore()
 
     def load_from_file(self, path="store_data.json"):
         """
@@ -16,9 +18,9 @@ class InMemoryDocstoreHandler(DocstoreHandler):
         docstore instance for langchain
         """
         # JSON 파일에서 데이터 읽기
-        with open(path, "r") as json_file:
+        with open(path) as json_file:
             loaded_data = json.load(json_file)
-            self.docstore.mset(list(zip(loaded_data.keys(), loaded_data.values())))
+            self.docstore.mset(list(zip(loaded_data.keys(), loaded_data.values(), strict=False)))
 
     def export_to_file(self, path="store_data.json"):
         """
@@ -36,3 +38,4 @@ class InMemoryDocstoreHandler(DocstoreHandler):
         # JSON 파일로 저장
         with open(path, "w") as json_file:
             json.dump(store_data, json_file)
+

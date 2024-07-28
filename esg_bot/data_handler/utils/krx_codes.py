@@ -1,8 +1,8 @@
 import FinanceDataReader as fdr
 import pandas as pd
 
-class KrxCodes():
 
+class KrxCodes:
     def __init__(self):
         self.krx_filename = "./krx.csv"
 
@@ -12,7 +12,7 @@ class KrxCodes():
             self.df_krx = self.update()
 
     def update(self):
-        df_krx = fdr.StockListing('KRX')
+        df_krx = fdr.StockListing("KRX")
         df_krx.to_csv(self.krx_filename)
         return df_krx
 
@@ -21,9 +21,10 @@ class KrxCodes():
         if len(row) != 1:
             return ""
         else:
-            return row['Code'].iloc[0]
-        
+            return row["Code"].iloc[0]
 
-#codeUtil = KrxCodes()
-#ret = codeUtil.convert_to_code("SK텔레콤")
-#print(ret)
+
+# codeUtil = KrxCodes()
+# ret = codeUtil.convert_to_code("SK텔레콤")
+# print(ret)
+

@@ -1,33 +1,33 @@
 # Configuring
-from langchain_openai import ChatOpenAI
-from data_handler.utils.paths import build_store_path
-from data_handler.utils.image_base64_utils import ImageBase64Utils
-from data_handler.lc_docstore_handler.in_memory_docstore_handler import InMemoryDocstoreHandler
-from data_handler.lc_retrieverHandler.retriever_handler import RetrieverHandler
-from data_handler.lc_vectorstore_handler.pinecone_vectorstore_handler import PineconeVectorstoreHandler
-
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.messages import HumanMessage
-
-from dotenv import load_dotenv
-import pandas as pd
 import os
+
+import pandas as pd
+from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_openai import ChatOpenAI
+
+from esg_bot.data_handler.lc_docstore_handler.in_memory_docstore_handler import InMemoryDocstoreHandler
+from esg_bot.data_handler.lc_retrieverHandler.retriever_handler import RetrieverHandler
+from esg_bot.data_handler.lc_vectorstore_handler.pinecone_vectorstore_handler import PineconeVectorstoreHandler
+from esg_bot.data_handler.utils.image_base64_utils import ImageBase64Utils
+from esg_bot.data_handler.utils.paths import build_store_path
 
 # Load the .env file
 load_dotenv()
 
 file_list_df = pd.read_csv("./data/reports.csv")
-target = "LG에너지솔루션"#SK텔레콤"
+target = "LG에너지솔루션"  # SK텔레콤"
 row = file_list_df[file_list_df.company_name == target].iloc[0]
 company_name = row["company_name"]
 year = row["year"]
-url = f"{os.getenv('logblack_url')}{company_name}_{year}.pdf"
+url = f"{os.getenv('LOGBLACK_URL')}{company_name}_{year}.pdf"
 
 
-class RAGChain():
+class RAGChain:
     def __init__(self):
-        if False: #TODO, config LangSmith
+        if False:  # TODO, config LangSmith
             os.environ["LANGCHAIN_PROJECT"] = "LangSmithTracing"
 
     def invoke(self, query):
@@ -37,10 +37,10 @@ class RAGChain():
 class ESGReportRAGChain(RAGChain):
     def __init__(self, company_name, year):
         self.vectorstore_handler = PineconeVectorstoreHandler(
-            company_name=company_name, year=year, embeddingModel='text-embedding-3-large', postfix='kr'
-            ).getStore()
+            company_name=company_name, year=year, embeddingModel="text-embedding-3-large", postfix="kr"
+        ).getStore()
         self.docstore_handler = InMemoryDocstoreHandler()
-        self.docstore_handler.load_from_file(build_store_path(company_name,year))
+        self.docstore_handler.load_from_file(build_store_path(company_name, year))
         self.lc_docstore = self.docstore_handler.getStore()
         self.lc_retriever = RetrieverHandler(self.vectorstore_handler, self.lc_docstore)
 
@@ -64,7 +64,7 @@ class ESGReportRAGChain(RAGChain):
         """
         formatted_texts = "\n".join(data_dict["context"]["texts"])
         messages = []
-    
+
         # 이미지가 있으면 메시지에 추가
         if data_dict["context"]["images"]:
             for image in data_dict["context"]["images"]:
@@ -73,7 +73,7 @@ class ESGReportRAGChain(RAGChain):
                     "image_url": {"url": f"data:image/jpeg;base64,{image}"},
                 }
                 messages.append(image_message)
-    
+
         # 분석을 위한 텍스트 추가
         text_message = {
             "type": "text",
@@ -90,4 +90,5 @@ class ESGReportRAGChain(RAGChain):
         messages.append(text_message)
         return [HumanMessage(content=messages)]
 
-#ret = chain_multimodal_rag.invoke("이사회 내에서 기후변화 및 탄소중립 안건을 보고하거나 결의하였는가?")
+
+# ret = chain_multimodal_rag.invoke("이사회 내에서 기후변화 및 탄소중립 안건을 보고하거나 결의하였는가?")
