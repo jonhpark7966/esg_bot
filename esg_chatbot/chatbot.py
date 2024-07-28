@@ -8,6 +8,7 @@ from langsmith import Client
 from streamlit_feedback import streamlit_feedback
 
 from esg_bot.chain.rag_chain import ESGReportRAGChain
+from esg_bot.data_handler.utils.lc_callback_handler import RetrieveCallbackHandler
 
 # Load the .env file
 load_dotenv()
@@ -17,6 +18,7 @@ target = "SK텔레콤"  ##"LG에너지솔루션"
 row = file_list_df[file_list_df.company_name == target].iloc[0]
 company_name = row["company_name"]
 year = row["year"]
+
 
 chain = ESGReportRAGChain(company_name=company_name, year=year)
 
@@ -45,13 +47,15 @@ An example of a Streamlit Chat UI capturing user feedback.
 st.sidebar.markdown("## Feedback Scale")
 feedback_option = "thumbs" if st.sidebar.toggle(label="`Faces` ⇄ `Thumbs`", value=False) else "faces"
 
+rcb = RetrieveCallbackHandler()
+
 with st.form("form"):
     text = st.text_area("Enter text:", "Ask me a question!")
     submitted = st.form_submit_button("Submit")
     if submitted:
         # get run_id from chain or lanchain run
         with collect_runs() as cb:
-            st.info(chain.invoke(text))
+            st.info(chain.invoke(text, callbacks=[rcb]))
             st.session_state.run_id = cb.traced_runs[0].id
 
 if st.session_state.get("run_id"):

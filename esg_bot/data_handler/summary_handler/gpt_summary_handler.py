@@ -30,9 +30,11 @@ class GPTSummaryHandler(SummaryHandler):
                     components[key+"_summaries"] = summaries
                 elif key == "page_images_path":
                     # 이미지 요약 실행
-                    img_base64_list, image_summaries = self.generate_img_summaries(value, model)
+                    img_base64_list, image_summaries, page_nums = self.generate_img_summaries(value, model)
                     components["page_images_b64"] = img_base64_list
                     components["page_images_summaries"] = image_summaries
+                    components["page_num"] = page_nums
+
                     # remove paths.
                     del components["page_images_path"]
                 
@@ -110,6 +112,9 @@ class GPTSummaryHandler(SummaryHandler):
         # 이미지 요약을 저장할 리스트
         image_summaries = []
 
+        # number of pages
+        page_nums = []
+
         # 요약을 위한 프롬프트
         prompt = """You are an assistant tasked with summarizing images for retrieval. \
         These summaries will be embedded and used to retrieve the raw image. \
@@ -146,9 +151,10 @@ class GPTSummaryHandler(SummaryHandler):
                     summary = self.image_summarize(base64_image, prompt, model)
                     img_base64_list.append(base64_image)
                     image_summaries.append(summary)
+                    page_nums.append(int(img_path.split("/")[-1].split("_")[-1].split(".")[0]))
                 except:
                     print(f"FAIL! {img_path}")
 
-        return img_base64_list, image_summaries
+        return img_base64_list, image_summaries, page_nums
 
 
