@@ -1,20 +1,16 @@
-import FinanceDataReader as fdr
 import pandas as pd
-
+import os
 
 class KrxCodes:
     def __init__(self):
-        self.krx_filename = "./krx.csv"
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        DATA_FILE_PATH = os.path.join(BASE_DIR, 'krx.csv')
+        self.krx_filename = DATA_FILE_PATH
 
         try:
             self.df_krx = pd.read_csv(self.krx_filename)
         except:
             self.df_krx = self.update()
-
-    def update(self):
-        df_krx = fdr.StockListing("KRX")
-        df_krx.to_csv(self.krx_filename)
-        return df_krx
 
     def convert_to_code(self, name):
         row = self.df_krx[self.df_krx.Name == name]
@@ -27,4 +23,3 @@ class KrxCodes:
 # codeUtil = KrxCodes()
 # ret = codeUtil.convert_to_code("SK텔레콤")
 # print(ret)
-

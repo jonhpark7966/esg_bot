@@ -2,52 +2,64 @@ import os
 
 import pandas as pd
 import streamlit as st
+import base64
+from PIL import Image
+import io
 from dotenv import load_dotenv
 from langchain_core.tracers.context import collect_runs
 from langsmith import Client
 from streamlit_feedback import streamlit_feedback
 
 from esg_bot.chain.rag_chain import ESGReportRAGChain
+from esg_bot.data_handler.utils.image_base64_utils import ImageBase64Utils
 from esg_bot.data_handler.utils.lc_callback_handler import RetrieveCallbackHandler
 
 # Load the .env file
 load_dotenv()
 
-file_list_df = pd.read_csv("./data/reports.csv")
-target = "SK텔레콤"  ##"LG에너지솔루션"
-row = file_list_df[file_list_df.company_name == target].iloc[0]
-company_name = row["company_name"]
-year = row["year"]
-
-
-chain = ESGReportRAGChain(company_name=company_name, year=year)
-
+company_name = "현대차"
+year = 2024
 # Langsmith project change
 os.environ["LANGCHAIN_PROJECT"] = "LogBlack Chatbot Tracing & Feedback"
 
 client = Client()
 
+# Set the page icon
 st.set_page_config(
-    page_title="Capturing User Feedback",
-    page_icon="🦜️️🛠️",
+    page_title="Ask me about ESG Reports!",
+    page_icon="🚀"
 )
 
-st.subheader("🦜🛠️ Chatbot with Feedback in LangSmith")
+st.subheader("Ask me about ESG Reports!")
 
 st.sidebar.info(
     """
-An example of a Streamlit Chat UI capturing user feedback.
+LOGBLACK ESG Report Chatbot
 
-- [LangSmith Documentation](https://docs.smith.langchain.com/)
-- Streamlit's [chat elements Documentation](https://docs.streamlit.io/library/api-reference/chat)
-- Trubrics' [Streamlit-Feedback](https://github.com/trubrics/streamlit-feedback) component
+links will be added. TBD.
+
 """
 )
 
-st.sidebar.markdown("## Feedback Scale")
-feedback_option = "thumbs" if st.sidebar.toggle(label="`Faces` ⇄ `Thumbs`", value=False) else "faces"
+# TODO, make a database and get data from the database
+def getYears(company):
+    if company == "현대차":
+        return [2024]
+    elif company == "SK텔레콤":
+        return [2023]
+    else:
+        return []
 
-rcb = RetrieveCallbackHandler()
+company_name = st.sidebar.selectbox(
+    "Select a company",
+    ["현대차", "SK텔레콤"]
+)
+year = st.sidebar.selectbox(
+    "Select a year",
+    getYears(company_name)
+)
+
+feedback_option = "faces"
 
 with st.form("form"):
     text = st.text_area("Enter text:", "Ask me a question!")
@@ -55,7 +67,25 @@ with st.form("form"):
     if submitted:
         # get run_id from chain or lanchain run
         with collect_runs() as cb:
-            st.info(chain.invoke(text, callbacks=[rcb]))
+            rcb = RetrieveCallbackHandler()
+            chain = ESGReportRAGChain(company_name=company_name, year=year)
+            response = chain.invoke(text, callbacks=[rcb])
+
+            st.info(response)
+            docs = rcb.retrieved_docs
+
+            for doc in docs:
+                b64images = ImageBase64Utils.split_image_text_types([doc])["images"]
+                image_data = base64.b64decode(b64images[0])
+                img = Image.open(io.BytesIO(image_data))
+
+                source = doc.metadata["source_url"]
+                page_number = doc.metadata["page_num"]
+
+                # wirte page nujmber and source, source is the url of the pdf file, show it in links
+                st.write(f"Page: {page_number}, from [Source]({source})")
+                st.image(img, use_column_width=True)
+
             st.session_state.run_id = cb.traced_runs[0].id
 
 if st.session_state.get("run_id"):

@@ -9,12 +9,8 @@ from esg_bot.data_handler.utils.lc_callback_handler import RetrieveCallbackHandl
 # Load the .env file
 load_dotenv()
 
-file_list_df = pd.read_csv("./data/reports.csv")
-target = "SK텔레콤"  ##"LG에너지솔루션"
-row = file_list_df[file_list_df.company_name == target].iloc[0]
-company_name = row["company_name"]
-year = row["year"]
-url = f"{os.getenv('LOGBLACK_URL')}{company_name}_{year}.pdf"
+company_name = "현대차"
+year = 2024
 
 cb = RetrieveCallbackHandler()
 chain = ESGReportRAGChain(company_name=company_name, year=year)

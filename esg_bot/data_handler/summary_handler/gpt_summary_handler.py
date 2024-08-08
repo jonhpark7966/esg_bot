@@ -33,7 +33,7 @@ class GPTSummaryHandler(SummaryHandler):
                     img_base64_list, image_summaries, page_nums = self.generate_img_summaries(value, model)
                     components["page_images_b64"] = img_base64_list
                     components["page_images_summaries"] = image_summaries
-                    components["page_num"] = page_nums
+                    components["page_nums"] = page_nums
 
                     # remove paths.
                     del components["page_images_path"]

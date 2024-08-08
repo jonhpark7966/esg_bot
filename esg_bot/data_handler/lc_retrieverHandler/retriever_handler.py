@@ -23,7 +23,8 @@ class RetrieverHandler:
         True on Success
         """
 
-        self.add_documents(components["page_images_summaries"], components["page_images_b64"], components["source_url"], company_name, year)
+        self.add_documents(components["page_images_summaries"], components["page_images_b64"],
+                            components["source_url"], components["page_nums"], company_name, year)
 
         return True
 
