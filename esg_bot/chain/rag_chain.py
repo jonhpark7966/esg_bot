@@ -83,6 +83,7 @@ class ESGReportRAGChain(RAGChain):
                 "Use this information to asnwer the following question.\n"
                 "Answer 예 or 아니오 first, and explain the reason based on the provided pages of ESG report."
                 "If possible, find the page number on the image and inform the page numbers for users to find the evidence easily."
+                "Write down the reasons in bullet points, head of bullet points is breif summary of each reason with the page number.\n"
                 "Answer in Korean. Do NOT translate company names.\n"
                 f"User-provided question: {data_dict['question']}\n\n"
             ),

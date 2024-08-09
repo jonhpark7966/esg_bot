@@ -39,13 +39,14 @@ if __name__ == "__main__":
     report_name = "report.pdf"
     file_list_df = pd.read_csv("./data/reports.csv")
 
-    target = "현대차" #"SK텔레콤"  # "LG에너지솔루션"#
+    target = "현대비앤지스틸" #"현대차" #"SK텔레콤"  # "LG에너지솔루션"#
     #row = file_list_df[file_list_df.company_name == target].iloc[0]
 
     company_name = target #row["company_name"]
     year = 2024 #row["year"]
     #url = f"{os.getenv('LOGBLACK_URL')}{company_name}_{year}.pdf"
-    url = "https://www.hyundai.com/content/dam/hyundai/kr/ko/images/company-intro/sustain-manage/2024/hmc-sr-kor-2024.pdf"
+    #url = "https://www.hyundai.com/content/dam/hyundai/kr/ko/images/company-intro/sustain-manage/2024/hmc-sr-kor-2024.pdf"
+    url = "https://www.bngsteel.com/kr/pds/file/pdf/Sustainability_Report.pdf"
 
     # FIXME: TESTING.
     # url = "https://www.clickdimensions.com/links/TestPDFfile.pdf"
