@@ -33,9 +33,11 @@ class RAGChain:
     def invoke(self, query, callbacks= []):
         return self.chain.invoke(query, config={"callbacks": callbacks})
 
-
 class ESGReportRAGChain(RAGChain):
     def __init__(self, company_name, year):
+        for key in ["OPENAI_API_KEY", "LANGCHAIN_API_KEY", "PINECONE_API_KEY", "LOGBLACK_URL", "LANGCHAIN_PROJECT", "LANGCHAIN_TRACING_V2"]:
+            os.environ[key] = os.getenv(key).strip()  # Strip "\r" or any other whitespace
+
         self.vectorstore_handler = PineconeVectorstoreHandler(
             company_name=company_name, year=year, embeddingModel="text-embedding-3-large", postfix="kr"
         ).getStore()

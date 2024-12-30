@@ -7,13 +7,14 @@ from pinecone import ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 
 import os
- 
+
 
 
 class PineconeVectorstoreHandler(VectorstoreHandler):
 
     def preinit(self):
-        self.api_key = os.getenv('PINECONE_API_KEY')
+        # FIXME, env string is not working, because of '\r' ??
+        self.api_key = os.getenv('PINECONE_API_KEY').strip()
         self.pc = Pinecone(api_key=self.api_key)
         self.code = KrxCodes().convert_to_code(self.company_name)
         self.index_name = "logblack-esg-bot"
@@ -29,8 +30,9 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
 
         if self.index_name not in self.pc.list_indexes().names():
             raise ValueError("Index does not exist in the Pinecone Project")
-            
+
         return PineconeVectorStore(
+            index = self.pc.Index(self.index_name),
             index_name=self.index_name,
             embedding=self.lc_embeddingModel,
             namespace=self.namespace
@@ -66,7 +68,7 @@ class PineconeVectorstoreHandler(VectorstoreHandler):
                 region='us-east-1'
             )
           )
-            
+
         return PineconeVectorStore(
             index_name=self.index_name,
             embedding=self.lc_embeddingModel,
