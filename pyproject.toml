@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "esg-bot"
+version = "0.1.0"
+description = ""
+authors = ["Jong Hyun Park <jonhpark7966@gmail.com>"]
+readme = "README.md"
+packages = [
+  { include = "esg_bot" },
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pdf2image = "^1.17.0"
+pillow = "^11.0.0"
+langchain = "^0.3.13"
+langchain-core = "^0.3.28"
+langsmith = "^0.2.6"
+python-dotenv = "^1.0.1"
+openai = "^1.58.1"
+langchain-openai = "^0.2.14"
+pandas = "^2.2.3"
+scipy = "^1.14.1"
+kiwipiepy = "^0.20.3"
+rank-bm25 = "^0.2.2"
+cohere = "^5.13.4"
+streamlit = "^1.41.1"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+
