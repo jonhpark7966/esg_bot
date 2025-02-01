@@ -8,11 +8,14 @@ from esg_bot.grader import retrieval_relevance
 from esg_bot.choice_answer import get_answer_rag
 from esg_bot.utils import encode_image
 
+from langsmith import traceable
 
+
+@traceable(name="Process Question", project_name="[KCGS] Report Analysis")
 def process_question(SR_REPORT_CORPUS_VECTOR_PATH, SR_REPORT_IMAGE_PATH, question, answer_choices,
                      relevance_score_threshold=0.5, max_relevant_pages=5, min_relevant_pages=3,
-                     grader_model="o1", answer_model="o1"):
-    df = pd.read_csv(SR_REPORT_CORPUS_VECTOR_PATH + "corpus_vector.csv")
+                     grader_model="gpt-4o", answer_model="o1"):
+    df = pd.read_csv(SR_REPORT_CORPUS_VECTOR_PATH + "corpus_vector_sr.csv")
     df["vector"] = df["vector"].apply(lambda x: eval(x))
     h_retriever = HybridRetriever(df)
 
@@ -50,8 +53,8 @@ if __name__ == "__main__":
     load_dotenv()
 
     # Example test function
-    SR_REPORT_CORPUS_VECTOR_PATH = "./"
-    SR_REPORT_IMAGE_PATH = "./pages"
+    SR_REPORT_CORPUS_VECTOR_PATH = "./data/reports/2024/현대차/"
+    SR_REPORT_IMAGE_PATH = SR_REPORT_CORPUS_VECTOR_PATH + "./pages"
 
     question = """이사회 내에서 기후변화 및 탄소중립 안건을 보고하거나 결의하였는가?
 

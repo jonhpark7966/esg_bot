@@ -5,6 +5,8 @@
 from typing import Annotated, TypedDict
 from langchain_openai import ChatOpenAI
 
+from langsmith import traceable
+
 class RetrievalRelevanceGrade(TypedDict):
     explanation: Annotated[str, ..., "Explain your reasoning for the score"]
     relevant: Annotated[bool, ..., "True if the retrieved documents are relevant to the question, False otherwise"]
@@ -27,6 +29,7 @@ Explain your reasoning in a step-by-step manner to ensure your reasoning and con
 
 Avoid simply stating the correct answer at the outset."""
 
+@traceable(name="Retrieval Relevance Grader")
 def retrieval_relevance(question, docs, model="gpt-4o") -> bool:
     retrieval_relevance_llm = ChatOpenAI(model=model).with_structured_output(RetrievalRelevanceGrade, method="json_schema", strict=True)
 

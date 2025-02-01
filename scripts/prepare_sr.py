@@ -13,7 +13,7 @@ def process_sr_report(sr_report_path, sr_report_image_path, sr_report_corpus_vec
     extract_images_from_pdf(sr_report_path, sr_report_image_path)
 
     prompt = ""
-    with open("../data/prompts/page_to_summary.txt", "rb") as prompt_file:
+    with open("./data/prompts/page_to_summary.txt", "rb") as prompt_file:
         # read file to string
         prompt = prompt_file.read().decode("utf-8")
 
@@ -47,7 +47,7 @@ def process_sr_report(sr_report_path, sr_report_image_path, sr_report_corpus_vec
 
     # save df to csv
     os.makedirs(sr_report_corpus_vector_path, exist_ok=True)
-    df.to_csv(sr_report_corpus_vector_path + "corpus_vector.csv", index=False)
+    df.to_csv(sr_report_corpus_vector_path + "corpus_vector_sr.csv", index=False)
 
 
 

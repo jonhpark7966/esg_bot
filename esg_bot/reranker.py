@@ -3,6 +3,9 @@ import os
 import pandas as pd
 
 
+from langsmith import traceable
+
+@traceable(name="Reranking")
 def rerank(question, df, top_n=10):
     cohere_api_key = os.getenv("COHERE_API_KEY")
     co = cohere.ClientV2(cohere_api_key)

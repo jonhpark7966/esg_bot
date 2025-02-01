@@ -25,6 +25,7 @@ kiwipiepy = "^0.20.3"
 rank-bm25 = "^0.2.2"
 cohere = "^5.13.4"
 streamlit = "^1.41.1"
+openpyxl = "^3.1.5"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

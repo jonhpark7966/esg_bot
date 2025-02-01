@@ -1,5 +1,6 @@
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
+from langsmith import traceable
 from esg_bot.utils import encode_image
 
 
@@ -40,7 +41,7 @@ write in Korean. Do NOT translate company names.
   - **90페이지**: ESG Performance Data:  사회공헌(기부금, 임직원 자원봉사 등) 현황  
 """
 
-
+@traceable(name="Rewrite Explanation in Markdown", project_name="[KCGS] Report Analysis")
 def write_explanation(graded_row, SR_REPORT_IMAGE_PATH, model = "gpt-4o"):
     llm = ChatOpenAI(model=model, max_tokens=8192)
 
@@ -80,11 +81,11 @@ Explanation: {graded_row.loc["explanation"]}
 if __name__ == "__main__":
     import pandas as pd
 
-    i = 92
+    i = 22
     q_df = pd.read_csv("../data/reports/2024/서연이화/graded.csv")
     row = q_df.loc[i]
 
-    SR_REPORT_PATH = "../data/reports/2024/서연이화/"
+    SR_REPORT_PATH = "../data/reports/2024/현대차/"
     SR_REPORT_IMAGE_PATH = SR_REPORT_PATH + "pages"
 
     content = write_explanation(row, SR_REPORT_IMAGE_PATH, model = "gpt-4o-mini")
