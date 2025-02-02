@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from pathlib import Path
 
 def get_available_years():
     """Get available years from the data directory."""
@@ -69,3 +70,22 @@ def get_source_pdf(year, company):
             return os.path.join(reports_dir, file)
     
     return None 
+
+def load_data(year: str, company: str) -> pd.DataFrame:
+    """
+    Load the graded.csv file for the specified year and company.
+    
+    Args:
+        year (str): The year to load data from
+        company (str): The company name to load data for
+        
+    Returns:
+        pd.DataFrame: The loaded data, or None if file doesn't exist
+    """
+    file_path = Path(f"data/reports/{year}/{company}/graded.csv")
+    
+    try:
+        df = pd.read_csv(file_path)
+        return df
+    except FileNotFoundError:
+        return None 
