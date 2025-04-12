@@ -14,6 +14,13 @@ A Streamlit application that provides:
 ├── data
 │   └── 2024
 │       └── COMPANYNAME
+│           ├── ar
+│           │   ├── corpus_vector.csv
+│           │   ├── I. 회사의 개요.md
+│           │   ├── II. 사업의 내용.md 
+│           │   ├── III. 재무에 관한 사항.md
+│           │   └── IV. 이사의 경영진단.md
+│           ├── corpus_vector_sr.csv
 │           ├── graded.csv
 │           └── pages
 │               ├── image_1.jpg
