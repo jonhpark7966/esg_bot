@@ -8,7 +8,7 @@ from st_app.utils.ui_components import display_evidence_selection, display_answe
 from pathlib import Path
 import pandas as pd
 import time
-
+import os
 # Page configuration
 st.set_page_config(
     page_title="ESG Report Analysis - Chat",
@@ -121,9 +121,13 @@ with chat_container:
         # Option to display evidence used
         with st.expander("View sources used"):
             for i, source in enumerate(evidence):
-                st.markdown(f"**Source {i+1}:** Page {source.get('page', 'N/A')} - {source.get('section', 'N/A')}")
-                st.markdown(source.get('content', ''))
-        
+                st.markdown(f"**Source {i+1}:** Page {source.get('page', 'N/A')}")
+                # Get image path for the page
+                image_path = f"data/reports/{st.session_state.selected_year}/{st.session_state.selected_company}/pages/image_{source.get('page')}.jpg"
+                if os.path.exists(image_path):
+                    st.image(image_path, caption=f"Page {source.get('page')}")
+                else:
+                    st.markdown(source.get('content', ''))
         st.markdown("---")
 
 # Process current question based on substage
@@ -349,8 +353,8 @@ elif st.session_state.processing_stage == "selecting":
                     st.session_state.evidence_checkboxes[i] = st.checkbox(f"Select", key=f"evidence_{i}", 
                                                                         value=st.session_state.evidence_checkboxes[i])
                 with col2:
-                    st.markdown(f"**Page {result['page']}** - Relevance: {result['relevance']:.2f}")
-                    with st.expander(f"View content"):
+                    st.markdown(f"Relevance: {result['relevance']:.2f}")
+                    with st.expander(f"View content", expanded=True):
                         # Try to show the page image
                         img_path = Path(f"data/reports/{st.session_state.selected_year}/{st.session_state.selected_company}/pages/image_{result['page']}.jpg")
                         if img_path.exists():
