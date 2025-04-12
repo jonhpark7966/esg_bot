@@ -1,7 +1,6 @@
 from pdf2image import convert_from_path
 import os
 import base64
-
 from openai import OpenAI
 
 from langchain_core.messages import HumanMessage
@@ -45,6 +44,16 @@ def image_summarize(img_base64, prompt, model = "gpt-4o-mini"):
             )
         ]
     )
+    return msg.content
+
+def text_summarize(text, prompt, model = "gpt-4o-mini"):
+    chat = ChatOpenAI(model=model, max_tokens=8192)
+    msg = chat.invoke(
+        [
+            HumanMessage(content=prompt + "\n ---- \n markdown text: " + text)
+        ]
+    )
+
     return msg.content
 
 def text_to_embeddings(text, model = "text-embedding-3-large"):

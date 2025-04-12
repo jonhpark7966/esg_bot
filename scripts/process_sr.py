@@ -15,7 +15,7 @@ if os.path.basename(os.getcwd()) != "esg_bot":
 # Load .env file
 load_dotenv()
 
-SR_REPORT_PATH = "./data/reports/2024/삼성바이오로직스/"
+SR_REPORT_PATH = "./data/reports/2024/YG엔터테인먼트/"
 SR_REPORT_IMAGE_PATH = SR_REPORT_PATH + "pages"
 SR_REPORT_CORPUS_VECTOR_PATH = SR_REPORT_PATH 
 PREPROCESS_MODEL = "o1"
@@ -38,7 +38,6 @@ if os.path.isfile(SR_REPORT_PATH + "graded.csv"):
 
 j = 0
 for i in range(len(q_df)):
-
 
     if 'grade' in q_df.columns:
         if not pd.isna(q_df.loc[i, 'grade']):
