@@ -1,9 +1,34 @@
 import streamlit as st
 import time
+import base64
+import os
+from pathlib import Path
+
+from esg_bot.choice_answer import get_answer_rag, get_streaming_answer
+
+def encode_image(image_path):
+    """
+    Encode an image file as base64
+    
+    Parameters:
+    -----------
+    image_path : str
+        Path to the image file
+    
+    Returns:
+    --------
+    str
+        Base64 encoded image
+    """
+    if not os.path.exists(image_path):
+        return None
+        
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
 
 def generate_answer(question, evidence):
     """
-    Generate an answer based on the question and selected evidence
+    Generate an answer based on the question and selected evidence with streaming output
     
     Parameters:
     -----------
@@ -15,60 +40,40 @@ def generate_answer(question, evidence):
     Returns:
     --------
     str
-        Generated answer with citations
+        The complete generated answer text
     """
-    # This is a placeholder implementation
-    # In a real implementation, this would use an LLM to generate the answer
+    # Extract page numbers from evidence
+    page_numbers = [item.get('page') for item in evidence if 'page' in item]
     
-    # Simulate processing time
-    time.sleep(2)
+    # Prepare image paths based on selected company and year
+    selected_year = st.session_state.selected_year
+    selected_company = st.session_state.selected_company
     
-    # Get citations
-    citations = [f"[{i+1}]" for i in range(len(evidence))]
+    # Construct image paths and encode them
+    image_paths = []
+    for page in page_numbers:
+        image_path = f"data/reports/{selected_year}/{selected_company}/pages/image_{page}.jpg"
+        image_paths.append(image_path)
     
-    # Create a mock answer for demonstration
-    if "carbon" in question.lower() or "emissions" in question.lower():
-        answer = f"""
-Based on the provided evidence, the company has made significant progress in reducing its environmental impact. 
-Specifically, carbon emissions were reduced by 15% in 2023 compared to the previous year {citations[0]}.
-
-This reduction is part of a broader sustainability strategy that includes:
-- Water usage reduction by 30% across manufacturing plants {citations[1]}
-- Alignment with UN Sustainable Development Goals {citations[2]}
-- Investments in renewable energy totaling $25 million, representing 40% of capital expenditure {citations[3]}
-
-These initiatives demonstrate a comprehensive approach to environmental sustainability.
-        """
-    elif "strategy" in question.lower() or "esg" in question.lower():
-        answer = f"""
-The company has implemented a new ESG strategy that is aligned with the UN Sustainable Development Goals {citations[2]}.
-This strategy encompasses multiple areas:
-
-1. Environmental: Reducing carbon emissions by 15% {citations[0]} and water usage by 30% {citations[1]}
-2. Social: Implementing work-life balance policies that improved employee satisfaction by 10% {citations[4]}
-3. Governance: Board-level approval of the ESG strategy {citations[2]}
-
-Financial commitment is evident through the $25 million investment in renewable energy projects {citations[3]}.
-        """
-    else:
-        answer = f"""
-Based on the evidence provided, the company has demonstrated commitment to sustainability through several initiatives:
-
-1. Environmental improvements: 
-   - 15% reduction in carbon emissions {citations[0]}
-   - 30% decrease in water usage {citations[1]}
-
-2. Strategic alignment:
-   - ESG strategy aligned with UN Sustainable Development Goals {citations[2]}
-   - $25 million investment in renewable energy (40% of capital expenditure) {citations[3]}
-
-3. Social impact:
-   - 10% improvement in employee satisfaction following new work-life balance policies {citations[4]}
-
-These findings suggest a holistic approach to sustainability that spans environmental, social, and governance aspects.
-        """
+    # Encode images as base64
+    retrieved_pages_encoded = [encode_image(path) for path in image_paths]
     
-    return answer
+    # Filter out None values (images that couldn't be encoded)
+    retrieved_pages_encoded = [img for img in retrieved_pages_encoded if img is not None]
+    
+    # Create a placeholder for streaming output
+    answer_container = st.empty()
+    full_response = ""
+    
+    # Generate streaming response
+    for chunk in get_streaming_answer(question, retrieved_pages_encoded, model="gpt-4o"):
+        if hasattr(chunk, 'content'):
+            content = chunk.content
+            full_response += content
+            # Update the container with the accumulated response
+            answer_container.markdown(full_response)
+    
+    return full_response
 
 def generate_explanation(question, evidence, answer):
     """
